@@ -1,0 +1,208 @@
+@import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
+ 
+ /* Basic styling */
+ body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    position: relative; /* Ensure it works with the pseudo-element */
+    z-index: 0;
+}
+
+/* Dark background applied behind everything */
+body::before {
+    content: "";
+    position: fixed;body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        position: relative; /* Ensure it works with the pseudo-element */
+        z-index: 0;
+    }
+    
+    /* Dark background applied behind everything */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
+        z-index: -1;
+    }
+    
+    /* Ensuring the main container remains light */
+    .app-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1;
+    }
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
+    z-index: -1;
+}
+
+/* Ensuring the main container remains light */
+.app-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+/* Form styling */
+.task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row input, .form-row select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#taskName {
+    flex-grow: 1;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Task list styling */
+.task-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.filter-btn.active {
+    background-color: #ddd;
+    font-weight: bold;
+}
+
+.task-list {
+    background-color: white; /* White background for visibility */
+    border-radius: 8px; /* Rounded corners for a cleaner look */
+    padding: 15px; /* Adds spacing inside */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.task-info {
+    flex-grow: 1;
+}
+
+.task-high {
+    border-left: 4px solid #ff4d4d;
+}
+
+.task-medium {
+    border-left: 4px solid #ffb84d;
+}
+
+.task-low {
+    border-left: 4px solid #4CAF50;
+}
+
+.task-completed .task-name {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.task-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.progress-bar-container {
+    height: 20px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4CAF50;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    transition: width 0.3s ease;
+}
+
+
+
+svg {
+	font-family: "Russo One", sans-serif;
+	width: 100%; height: 100%;
+}
+svg text {
+	animation: stroke 5s forwards;
+	stroke-width: 2;
+	stroke: #729EA0;
+	font-size: 60px;
+}
+@keyframes stroke {
+	0%   {
+		fill: rgba(204,0,0,0); stroke: rgba(114,158,160,1);
+		stroke-dashoffset: 25%; stroke-dasharray: 0 50%; stroke-width: 2;
+	}
+	70%  {fill: rgba(204,0,0,0); stroke: rgba(114,158,160,1); }
+	80%  {fill: rgba(204,0,0,0); stroke: rgba(114,158,160,1); stroke-width: 3; }
+	100% {
+		fill: rgba(204,0,0,1); stroke: rgba(114,158,160,0);
+		stroke-dashoffset: -25%; stroke-dasharray: 50% 0; stroke-width: 0;
+	}
+}
+
+.wrapper {background-color: #FFFFFF};

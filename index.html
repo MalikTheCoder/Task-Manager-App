@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager App :3 </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <svg>
+            <text x="50%" y="50%" dy=".35em" text-anchor="middle">
+                Malik's Task Manager V1
+            </text>
+        </svg>
+    </div>
+        
+        <!-- Task Form -->
+        <form class="task-form" id="taskForm">
+            <div class="form-row">
+                <input type="text" id="taskName" placeholder="Enter task..." required>
+                <select id="taskPriority">
+                    <option value="high">High</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <input type="date" id="taskDueDate">
+                <button type="submit">Add Task</button>
+            </div>
+        </form>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+        </div>
+        
+        <!-- Task Filters -->
+        <div class="task-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="active">Active</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+        </div>
+        
+        <!-- Task List -->
+        <ul class="task-list" id="taskList">
+            <!-- Tasks will be added here dynamically -->
+        </ul>
+    </div>
+
+    <script>
+        // Main JavaScript code will go here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Task storage array
+            let tasks = [];
+            
+            // DOM elements
+            const taskForm = document.getElementById('taskForm');
+            const taskList = document.getElementById('taskList');
+            const taskName = document.getElementById('taskName');
+            const taskPriority = document.getElementById('taskPriority');
+            const taskDueDate = document.getElementById('taskDueDate');
+            const progressBar = document.getElementById('progressBar');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            // Set today as the default due date
+            const today = new Date().toISOString().split('T')[0];
+            taskDueDate.value = today;
+            
+            // Load tasks from localStorage
+            loadTasks();
+            
+            // Add event listener for form submission
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTask();
+            });
+            
+            // Add event listeners for filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    setActiveFilter(this);
+                    filterTasks(filter);
+                });
+            });
+            
+            // Add a new task
+            function addTask() {
+                const name = taskName.value.trim();
+                const priority = taskPriority.value;
+                const dueDate = taskDueDate.value;
+                
+                if (name) {
+                    const newTask = {
+                        id: Date.now(),
+                        name: name,
+                        priority: priority,
+                        dueDate: dueDate,
+                        completed: false,
+                        createdAt: new Date()
+                    };
+                    
+                    tasks.push(newTask);
+                    saveTasks();
+                    renderTasks();
+                    
+                    // Reset form
+                    taskName.value = '';
+                    taskPriority.value = 'medium';
+                    taskDueDate.value = today;
+                }
+            }
+            
+            // Render all tasks in the list
+            function renderTasks() {
+                taskList.innerHTML = '';
+                
+                if (tasks.length === 0) {
+                    taskList.innerHTML = '<li class="task-item">No tasks yet. Add one above!</li>';
+                    updateProgressBar(0, 0);
+                    return;
+                }
+                
+                let completedCount = 0;
+                
+                tasks.forEach(task => {
+                    if (task.completed) completedCount++;
+                    
+                    const taskItem = document.createElement('li');
+                    taskItem.className = `task-item task-${task.priority}`;
+                    if (task.completed) taskItem.classList.add('task-completed');
+                    
+                    const formattedDate = new Date(task.dueDate).toLocaleDateString();
+                    
+                    taskItem.innerHTML = `
+                        <div class="task-info">
+                            <span class="task-name">${task.name}</span>
+                            <div>
+                                <small>Due: ${formattedDate} | Priority: ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</small>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="toggle-btn" data-id="${task.id}">
+                                ${task.completed ? 'Undo' : 'Complete'}
+                            </button>
+                            <button class="delete-btn" data-id="${task.id}">Delete</button>
+                        </div>
+                    `;
+                    
+                    taskList.appendChild(taskItem);
+                });
+                
+                // Add event listeners to task buttons
+                document.querySelectorAll('.toggle-btn').forEach(btn => {
+                    btn.addEventListener('click', toggleTask);
+                });
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', deleteTask);
+                });
+                
+                // Update progress bar
+                updateProgressBar(completedCount, tasks.length);
+            }
+            
+            // Toggle task completion status
+            function toggleTask() {
+                const taskId = parseInt(this.getAttribute('data-id'));
+                tasks = tasks.map(task => {
+                    if (task.id === taskId) {
+                        task.completed = !task.completed;
+                    }
+                    return task;
+                });
+                
+                saveTasks();
+                renderTasks();
+            }
+            
+            // Delete a task
+            function deleteTask() {
+                const taskId = parseInt(this.getAttribute('data-id'));
+                tasks = tasks.filter(task => task.id !== taskId);
+                
+                saveTasks();
+                renderTasks();
+            }
+            
+            // Filter tasks
+            function filterTasks(filter) {
+                const allTasks = document.querySelectorAll('.task-item');
+                
+                allTasks.forEach(task => {
+                    if (filter === 'all') {
+                        task.style.display = '';
+                    } else if (filter === 'active' && task.classList.contains('task-completed')) {
+                        task.style.display = 'none';
+                    } else if (filter === 'completed' && !task.classList.contains('task-completed')) {
+                        task.style.display = 'none';
+                    } else {
+                        task.style.display = '';
+                    }
+                });
+            }
+            
+            // Set active filter button
+            function setActiveFilter(activeButton) {
+                filterButtons.forEach(button => {
+                    button.classList.remove('active');
+                });
+                activeButton.classList.add('active');
+            }
+            
+            // Update progress bar
+            function updateProgressBar(completed, total) {
+                if (total === 0) {
+                    progressBar.style.width = '0%';
+                    progressBar.textContent = '0%';
+                    return;
+                }
+                
+                const percentage = Math.round((completed / total) * 100);
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = percentage + '%';
+            }
+            
+            // Save tasks to localStorage
+            function saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+            
+            // Load tasks from localStorage
+            function loadTasks() {
+                const savedTasks = localStorage.getItem('tasks');
+                if (savedTasks) {
+                    tasks = JSON.parse(savedTasks);
+                    renderTasks();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
